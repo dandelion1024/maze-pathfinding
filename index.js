@@ -289,7 +289,6 @@ function step() {
         nodeTypeChangeable = false;
         alert('未找到路径');
     }
-
 }
 
 // 在 openList 中找 f 最小的元素的下标
