@@ -2,69 +2,68 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A* 算法</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="resizeBox.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A* Pathfinding</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="resizeBox.css">
 </head>
 
 <body>
-    <!-- 遮罩层 -->
-    <div id="cover"></div>
-    <div id="resize_div">
-        <div class="resize_box">
-            <h2>设置地图大小</h2>
-            <div>
-                <div class="item">
-                    <input type="text" id="row_input" required>
-                    <label for="">行数</label>
-                </div>
-                <div class="item">
-                    <input type="text" id="column_input" required>
-                    <label for="">列数</label>
-                </div>
-
-                <div class="btn_area1">
-                    <button class="btn" onclick="resize()">设置
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                    <button class="btn" onclick="untoggleResize()">取消
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                </div>
-            </div>
+  <div id="cover"></div>
+  <div id="resize_div">
+    <div class="resize_box">
+      <h2>Set map size</h2>
+      <div>
+        <div class="item">
+          <input type="text" id="row_input" required>
+          <label for="">row</label>
         </div>
-    </div>
-
-    <div id="map_box">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <div id="map_area"></div>
-    </div>
-
-    <div class="btn_div">
-        <div class="btn_area">
-            <button id="run_btn" class="dark_btn" onclick="findPath()">开始寻路</button>
-            <button id="step_btn" class="dark_btn" onclick="step()">单步运行</button>
-            <button id="bfs_btn" class="dark_btn" onclick="bfs()">广度搜索</button>
-            <button id="resize_btn" class="dark_btn" onclick="toggleResize()">地图大小</button>
-            <button id="reduction_btn" class="dark_btn" onclick="reduction()">状态重置</button>
+        <div class="item">
+          <input type="text" id="column_input" required>
+          <label for="">column</label>
         </div>
+
+        <div class="btn_area1">
+          <button class="btn" onclick="resize()">ok
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <button class="btn" onclick="untoggleResize()">cancel
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="node_div no_display" onclick="changeNodeType(this)" oncontextmenu="setStartAndFinish(this)">
-        <div class="g"></div>
-        <div class="h"></div>
-        <div class="f"></div>
+  </div>
+
+  <div id="map_box">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <div id="map_area"></div>
+  </div>
+
+  <div class="btn_div">
+    <div class="btn_area">
+      <button id="run_btn" class="dark_btn" onclick="findPath()">Finding path</button>
+      <button id="step_btn" class="dark_btn" onclick="step()">Single step</button>
+      <button id="bfs_btn" class="dark_btn" onclick="bfs()">Breadth first</button>
+      <button id="resize_btn" class="dark_btn" onclick="toggleResize()">Set map size</button>
+      <button id="reduction_btn" class="dark_btn" onclick="reduction()">Reset status</button>
     </div>
+  </div>
+  <div class="node_div no_display" onclick="changeNodeType(this)" oncontextmenu="setStartAndFinish(this)">
+    <div class="g"></div>
+    <div class="h"></div>
+    <div class="f"></div>
+  </div>
 </body>
 <script src="index.js"></script>
 

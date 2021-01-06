@@ -2,7 +2,7 @@ var mapArea = document.getElementById('map_area');
 var nodeTypeChangeable = true;
 var isRunning = false;
 
-// 1 表示障碍，0 表示路，2表示起点，3表示终点
+// 1.barrier  2.path  3.start point  4.end point
 var map = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -17,35 +17,32 @@ var map = [
 
 var mapNodes = [];
 
-// ********** 节点类型定义 ***********
+// ********** node type ***********
 var NodeType = {
-    REACHABLE: 0, // 可达区域
-    OBSTACLE: 1, // 障碍物
-    START: 2, // 起点
-    FINISH: 3, // 终点
-    OPEN: 4, // openList中的的节点
-    CLOSE: 5, // clostList中的的节点
-    PATH: 6, // 当前探测路径上的节点
-    CURRENT: 7
+    REACHABLE: 0,
+    OBSTACLE: 1,
+    START: 2,
+    FINISH: 3,
+    OPEN: 4, // in openList
+    CLOSE: 5, // in clostList
+    PATH: 6, // in final path
+    CURRENT: 7 // current probe node
 };
 
 NodeType.length = Object.keys(NodeType).length;
 
 // **********************************
 
-// ********** 节点颜色定义 ***********
-// openList中的点为绿色，closeList中的点为红色
-// 当前探测的路径中的节点为蓝色
-// 起点为黄色，终点为紫色，其他可达区域为白色
-// 不可通过区域为黑色
+// ********** node colors ***********
+// refer NodeType
 var NodeColor = {
-    REACHABLE: '#FFFFFF', // 可达区域
-    OBSTACLE: '#003300', // 障碍物
-    START: '#FF9900', // 起点
-    FINISH: '#CC00FF', // 终点
-    OPEN: '#006633', // openList中的的节点
-    CLOSE: '#FF3300', // clostList中的的节点
-    PATH: '#3399FF', // 当前探测路径上的节点
+    REACHABLE: '#FFFFFF',
+    OBSTACLE: '#003300',
+    START: '#FF9900',
+    FINISH: '#CC00FF',
+    OPEN: '#006633',
+    CLOSE: '#FF3300',
+    PATH: '#3399FF',
     CURRENT: '#6666FF'
 };
 
@@ -98,7 +95,7 @@ function initData() {
     var startExist = false;
     var finishExist = false;
 
-    // 寻找起点和终点
+    // find starting and ending point
     for (let i = 0; i < map.length; ++i) {
         for (let j = 0; j < map[i].length; ++j) {
             if (map[i][j] == 2) {
@@ -114,12 +111,12 @@ function initData() {
     }
 
     if (!startExist) {
-        alert('地图没有起点');
+        alert('There is no starting point');
         return false;
     }
 
     if (!finishExist) {
-        alert('地图没有终点');
+        alert('There is no ending point');
         return false;
     }
 
@@ -131,19 +128,19 @@ function initData() {
 }
 
 function checkSonNode(sonNode, curNode) {
-    // 跳过节点本身和障碍物
+    // Skip curNode itself and obstacles
     if (sonNode.equals(curNode) || isObstacle(sonNode)) {
         return;
     }
 
-    // 计算出子节点的对应属性
+    // calculate attributes of the child node
     sonNode.g = curNode.g + 1 * 10;
     sonNode.f = sonNode.g + geth(sonNode);
     sonNode.parent = curNode;
 
     var pos = inCloseList(sonNode);
 
-    // 如果在 closeList 中就跳过
+    // if in the closelist
     if (pos >= 0) {
         return;
     }
@@ -153,19 +150,17 @@ function checkSonNode(sonNode, curNode) {
     if (pos >= 0) {
         if (sonNode.f < openList[pos].f) {
             openList[pos] = sonNode;
-            console.log('更新了一个节点，新值=' + openList[pos].toString());
         }
         return;
     }
 
     openList.push(sonNode);
     drawNode(sonNode, NodeType.OPEN);
-    console.log('添加了一个节点，值=' + sonNode.toString());
 }
 
 function findPath() {
     if (isRunning) {
-        alert('算法已运行，请先重置状态');
+        alert('The program is running, please reset the status first');
         return;
     }
 
@@ -178,7 +173,8 @@ function findPath() {
         let curIndex = getMinNodeIndex();
         let curNode = openList[curIndex];
 
-        // 从 openList 中删除当前元素，并添加到 closeList 中
+        // Delete the current element from the openlist 
+        // and add it to the closelist
         openList.splice(curIndex, 1);
         closeList.push(curNode);
 
@@ -186,9 +182,9 @@ function findPath() {
             drawNode(curNode, NodeType.CLOSE);
         }
 
-        // 到目标节点了就结束
+        // It's over when we get to the target node
         if (curNode.equals(finishNode)) {
-            alert('A* 寻路完成，共搜索了 ' + closeList.length + ' 个节点');
+            alert('A * pathfinding completed, total searched ' + closeList.length + ' nodes');
             finishNode = curNode;
             break;
         }
@@ -248,15 +244,15 @@ function step() {
             lastNode = curNode;
         }
 
-        // 从 openList 中删除当前元素，并添加到 closeList 中
+        // delete the current element from the openlist and add it to the closelist
         openList.splice(curIndex, 1);
         closeList.push(curNode);
 
-        // 到目标节点了就结束
+        // It's over when we get to the target node
         if (curNode.equals(finishNode)) {
             finishNode = curNode;
             nodeTypeChangeable = false;
-            alert('A* 寻路完成，共搜索了 ' + closeList.length + ' 个节点');
+            alert('A * pathfinding completed, total searched ' + closeList.length + ' nodes');
             outputPath();
             return;
         }
@@ -287,14 +283,14 @@ function step() {
         sortOpenList();
     } else {
         nodeTypeChangeable = false;
-        alert('未找到路径');
+        alert('the path was not found');
     }
 }
 
 // 在 openList 中找 f 最小的元素的下标
 function getMinNodeIndex() {
     if (openList.length == 0) {
-        console.log('查找最小f的节点失败：openList为空');
+        console.log('Failed to find the node with minimum F: openlist is empty');
         return -1;
     }
 
@@ -361,7 +357,7 @@ function outputPath() {
         curNode = curNode.parent;
     }
 
-    alert('路径长度为: ' + cnt);
+    alert('The path length: ' + cnt);
 }
 
 function outputOpen() {
@@ -543,12 +539,12 @@ function swapNode(node1, node2) {
 
 function changeNodeType(node) {
     if (isRunning) {
-        alert('算法正在运行，请先重置状态');
+        alert('The program is running, please reset the status first');
         return;
     }
 
     if (!nodeTypeChangeable) {
-        alert('当前状态禁止修改，请重置状态后再操作');
+        alert('The current status cannot be modified. Please reset the status before operation');
         return;
     }
 
@@ -571,12 +567,12 @@ var setStart = true;
 
 function setStartAndFinish(nodeDiv) {
     if (isRunning) {
-        alert('算法正在运行，请先重置状态');
+        alert('The program is running, please reset the status first');
         return;
     }
 
     if (!nodeTypeChangeable) {
-        alert('当前状态禁止修改，请重置状态后再操作');
+        alert('The current status cannot be modified. Please reset the status before operation');
         return;
     }
 
@@ -696,17 +692,16 @@ function unshadowWindow() {
 
 /**
  * [Queue]
- * @param {[Int]} size [队列大小]
+ * @param {[Int]} size [Queue size]
  */
 function Queue(size) {
     var list = [];
 
-    //向队列中添加数据
     this.push = function (data) {
         if (data == null) {
             return false;
         }
-        //如果传递了size参数就设置了队列的大小
+
         if (size != null && !isNaN(size)) {
             if (list.length == size) {
                 this.pop();
@@ -717,17 +712,14 @@ function Queue(size) {
         return true;
     }
 
-    //从队列中取出数据
     this.pop = function () {
         return list.pop();
     }
 
-    //返回队列的大小
     this.size = function () {
         return list.length;
     }
 
-    //返回队列的内容
     this.quere = function () {
         return list;
     }
@@ -739,7 +731,7 @@ function Queue(size) {
 
 function bfs() {
     if (isRunning) {
-        alert('算法正在运行，请先重置状态');
+        alert('The program is running, please reset the status first');
         return;
     }
 
@@ -792,23 +784,23 @@ function bfs() {
     }
 
     if (success) {
-        alert('BFS搜索完成，共搜索了 ' + closeList.length + ' 个节点');
+        alert('BFS search complete, total searched ' + closeList.length + ' nodes');
         outputPath();
     } else {
-        alert('BFS未找到路径');
+        alert('BFS did not find the path');
     }
 
 }
 
 function bfsCheck(queue, curNode, sonNode) {
-    // 跳过节点本身和障碍物
+    // Skip the curNode itself and obstacles
     if (sonNode.equals(curNode) || isObstacle(sonNode)) {
         return;
     }
 
     var pos = inCloseList(sonNode);
 
-    // 如果在 closeList 中就跳过
+    // if it's in the closelist, skip it
     if (pos >= 0) {
         return;
     }
